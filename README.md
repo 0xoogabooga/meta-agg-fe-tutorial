@@ -1,8 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Meta Aggregator Quote Streaming Tutorial
 
-## Getting Started
+This Next.js tutorial shows how to connect to and stream data from the Ooga Booga Meta Dex Aggregator API using Server-Sent Events (SSE).
 
-First, run the development server:
+---
+
+## 🛠️ Getting Started
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd meta-agg-fe-tutorial
+
+# Install dependencies
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### Running the Development Server
 
 ```bash
 npm run dev
@@ -14,23 +33,142 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the application running.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗️ Architecture Overview & Core Components
 
-## Learn More
+![img.png](img.png)
 
-To learn more about Next.js, take a look at the following resources:
+**0. Ooga Booga Meta Dex Aggregator Backend**
+- Ooga Booga Aggregator service providing real-time swap quotes
+- Server-sent events streaming infrastructure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**1. API** (`src/api/meta-stream-api.ts`)
+- Manages SSE connections to the aggregator API
+- Handles quote stream parameters and events
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**2. Connection Management - useQuoteStream** (`src/hooks/use-quote-stream.ts`)
+- React hook for managing quote streams
+- Event subscription and cleanup lifecycle
 
-## Deploy on Vercel
+**3. Logic Layer - useAggregatorsQuote** (`src/hooks/use-aggregators-quote.ts`)
+- Preconfigured hook for USDT/HYPE quotes
+- Uses `useQuoteStream` under the hood
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**4. Presentation Layer Components** (`src/components/`)
+- React components for displaying quote data
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **That's Everything you need to get started with streaming quotes.**
+
+---
+
+## 📚 Key Concepts
+
+### 1. Quote Stream API
+
+The application connects to a streaming API that provides real-time swap quotes:
+
+```typescript
+const AGGREGATOR_BASE_URL = 'https://internal-gateway-hyperevm-dev.up.railway.app'
+```
+
+**Supported Parameters:**
+- `tokenIn`: Input token address
+- `tokenOut`: Output token address  
+- `amount`: Amount to swap (in token units)
+- `maxSlippage`: Maximum acceptable slippage (default: 0.01)
+- `to`: Recipient address (optional)
+- `aggregators`: List of specific aggregators to query (optional)
+
+### 2. Event Types
+
+The SSE stream emits several event types:
+
+- `connected`: Initial connection established
+- `quote`: New quote data received
+- `error`: Error occurred during streaming
+- `heartbeat`: Keep-alive signal
+
+### 3. Quote Data Structure
+
+Each quote contains information about the swap including:
+
+```typescript
+type QuoteResponse = {
+  aggregator: string;
+  quote: {
+    status: string;
+    amountIn: string;
+    amountOut: string;
+    fee: string;
+    value: string;
+    aggregator: string;
+    routerAddr: string;
+    calldata: string;
+    gas: string;
+    simulationAmountOut: string;
+    priceImpact: number;
+  };
+  timestamp: number;
+};
+```
+
+---
+
+## 🔧 Usage Examples
+
+### Basic Quote Stream
+
+```typescript
+import { useQuoteStream } from '@/hooks/use-quote-stream'
+
+const MyComponent = () => {
+  const { isConnected, latestQuote, error } = useQuoteStream({
+    chainId: 999, // HyperEVM chain ID
+    params: {
+      tokenIn: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT
+      tokenOut: '0x0000000000000000000000000000000000000000', // HYPE
+      amount: '10000000', // 10 USDT
+      maxSlippage: '0.5',
+    },
+    enabled: true
+  })
+
+  if (!isConnected) return <div>Connecting...</div>
+  if (error) return <div>Error: {error.message}</div>
+  
+  return (
+    <div>
+      <h3>Latest Quote:</h3>
+      <pre>{JSON.stringify(latestQuote, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+---
+
+## 🔍 Code Structure
+
+```
+src/
+├── api/
+│   └── meta-stream-api.ts     # SSE connection management
+├── hooks/
+│   ├── use-quote-stream.ts    # Generic quote streaming hook
+│   └── use-aggregators-quote.ts # Preconfigured USDT/HYPE hook
+├── components/
+│   └── quotes-component/      # Quote display components
+└── app/
+    ├── page.tsx              # Main page
+    ├── layout.tsx            # App layout
+    └── globals.css           # Global styles
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

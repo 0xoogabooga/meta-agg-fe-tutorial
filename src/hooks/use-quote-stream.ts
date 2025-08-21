@@ -6,12 +6,36 @@ import {
   type QuoteStreamParams,
 } from '@/api/meta-stream-api'
 
+/**
+ * Properties for configuring the quote stream hook
+ */
 interface UseQuoteStreamProps {
+  /** The blockchain network chain ID to connect to */
   chainId: number
+  /** Parameters for the quote stream including tokens, amounts, and aggregators */
   params: QuoteStreamParams
+  /** Whether the stream should be active. Defaults to true */
   enabled?: boolean
 }
 
+/**
+ * Custom React hook for managing real-time cryptocurrency quote streaming
+ *
+ * This hook establishes and manages a Server-Sent Events (SSE) connection to receive
+ * live price quotes for cryptocurrency trading pairs. It handles connection state,
+ * error management, and automatic cleanup.
+ *
+ * @param props - Configuration object for the quote stream
+ * @param props.chainId - The blockchain network chain ID to connect to
+ * @param props.params - Quote stream parameters including token addresses, amounts, and aggregators
+ * @param props.enabled - Optional flag to enable/disable the stream (default: true)
+ *
+ * @returns Object containing stream state and data
+ * @returns returns.isConnected - Boolean indicating if the stream is currently connected
+ * @returns returns.latestQuote - The most recent quote data received from the stream
+ * @returns returns.error - Any error that occurred during streaming (null if no error)
+ *
+ **/
 export const useQuoteStream = ({
   chainId,
   params,
