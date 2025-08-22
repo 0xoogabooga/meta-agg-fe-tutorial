@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import type { Address } from 'viem'
 import { fetchAggregators } from '@/api/api'
 import { useOBStore } from '@/store/store'
 import { useAggregatorsQuote } from './use-aggregators-quote'
@@ -6,14 +7,35 @@ import { useAggregatorsQuote } from './use-aggregators-quote'
 // Constants
 const QUOTE_EXPIRY_TIME_MS = 15000 // 15 seconds in milliseconds
 
-export const useAggregatorsList = () => {
-  const { isConnected, latestQuote } = useAggregatorsQuote()
+export const useAggregatorsList = (walletAddress?: Address) => {
+  const { isConnected, latestQuote } = useAggregatorsQuote(walletAddress)
+
+  // Track previous wallet address to detect changes
+  const prevWalletAddress = useRef<Address | undefined>(walletAddress)
 
   const setAggregatorQuote = useOBStore.use.setAggregatorQuote()
   const setAggregatorsMeta = useOBStore.use.setAggregatorsMeta()
   const removeOldAggregatorQuotes = useOBStore.use.removeOldAggregatorQuotes()
+  const removeAllAggregatorQuotes = useOBStore.use.removeAllAggregatorQuotes()
   const aggregatorsQuote = useOBStore.use.aggregatorsQuote()
   const aggregatorsMeta = useOBStore.use.aggregatorsMeta()
+
+  // Clear all quotes when wallet connection changes (connect/disconnect)
+  useEffect(() => {
+    const prevAddress = prevWalletAddress.current
+    const currentAddress = walletAddress
+
+    // If wallet connection state changed (connected <-> disconnected)
+    if (
+      (prevAddress && !currentAddress) ||
+      (!prevAddress && currentAddress) ||
+      prevAddress !== currentAddress
+    ) {
+      removeAllAggregatorQuotes()
+    }
+
+    prevWalletAddress.current = walletAddress
+  }, [walletAddress, removeAllAggregatorQuotes])
 
   // Update store when new quote arrives
   useEffect(() => {
@@ -71,6 +93,7 @@ export const useAggregatorsList = () => {
             status: data.quote?.status || 'Unknown',
             timestamp: data.timestamp,
             lastUpdated: new Date(data.timestamp).toLocaleTimeString(),
+            simulationAmountOut: data.quote?.simulationAmountOut || '0',
           }
         })
         .sort((a, b) => {

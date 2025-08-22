@@ -1,10 +1,13 @@
 'use client'
 
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
 import { useAggregatorsList } from '@/hooks/use-aggregators-list'
 import { formatBigIntTokenAmount } from '@/lib/utils'
 
 const AggregatorsListComponent = () => {
-  const { isConnected, aggregatorsList } = useAggregatorsList()
+  const { address: walletAddress, isConnected: walletConnected } = useAccount()
+  const { isConnected, aggregatorsList } = useAggregatorsList(walletAddress)
 
   const formatPriceImpact = (impact: number) => {
     return `${(impact * 100).toFixed(4)}%`
@@ -17,14 +20,78 @@ const AggregatorsListComponent = () => {
           <h1 className="text-2xl font-bold text-white mb-2">
             Aggregators List
           </h1>
-          <div className="flex items-center space-x-2 mb-3">
-            <div
-              className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
-            />
-            <span className="text-sm text-gray-300">
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </span>
+
+          {/* Connection Status and Connect Button */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <div
+                className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
+              />
+              <span className="text-sm text-gray-300">
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </span>
+              {walletConnected && (
+                <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                  Wallet Connected
+                </span>
+              )}
+            </div>
+            <ConnectButton />
           </div>
+
+          {/* Presimulation Explanation */}
+          {!walletConnected && (
+            <div className="bg-orange-900/30 border border-orange-700 rounded-lg p-3 mb-4">
+              <div className="flex items-center space-x-2 mb-1">
+                <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
+                <span className="text-orange-300 font-medium text-sm">
+                  🛡️ Protection Notice
+                </span>
+              </div>
+              <div className="text-gray-300">
+                <p className="text-xs">
+                  <span className="font-semibold text-orange-300">
+                    Connect your wallet
+                  </span>{' '}
+                  to get{' '}
+                  <span className="font-semibold text-green-400">
+                    real, presimulated pricing
+                  </span>{' '}
+                  from the Ooga Booga backend.
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Without wallet connection, quotes may be{' '}
+                  <span className="text-red-400">spoofed or manipulated</span>{' '}
+                  by aggregators. Connected wallets get verified, MEV-protected
+                  quotes that reflect actual execution prices.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {walletConnected && (
+            <div className="bg-green-900/30 border border-green-700 rounded-lg p-3 mb-4">
+              <div className="flex items-center space-x-2 mb-1">
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+                <span className="text-green-300 font-medium text-sm">
+                  ✅ Protected Mode Active
+                </span>
+              </div>
+              <div className="text-gray-300">
+                <p className="text-xs">
+                  You're now receiving{' '}
+                  <span className="font-semibold text-green-400">
+                    presimulated quotes
+                  </span>{' '}
+                  verified by the Ooga Booga backend.
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  These quotes reflect real execution conditions and are
+                  protected against price manipulation and MEV attacks.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Trading pair info block */}
           <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-3 mb-4">
@@ -108,7 +175,9 @@ const AggregatorsListComponent = () => {
                         <div className="text-xs text-gray-400">Amount Out</div>
                         <div className="text-green-400 font-semibold text-sm">
                           {formatBigIntTokenAmount(
-                            aggregator.amountOut,
+                            walletAddress
+                              ? aggregator.amountOut
+                              : aggregator.simulationAmountOut,
                             18,
                             'HYPE',
                           )}
