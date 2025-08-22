@@ -7,7 +7,7 @@ export const formatCalldata = (calldata: string) => {
 
 export const formatTokenAmount = (
   value: string | number | undefined,
-  tokenSymbol: 'USDT' | 'HYPE' | 'ETH' = 'HYPE',
+  tokenSymbol = 'HYPE',
 ) => {
   if (!value) return '0.00'
   const num = typeof value === 'string' ? Number.parseFloat(value) : value
@@ -17,17 +17,13 @@ export const formatTokenAmount = (
 
   switch (tokenSymbol) {
     case 'USDT':
+    case 'USDC':
       decimals = 6
       divisor = 10 ** 6
       break
     case 'HYPE':
-      decimals = 18
-      divisor = 10 ** 18
-      break
     case 'ETH':
-      decimals = 18
-      divisor = 10 ** 18
-      break
+    case 'DAI':
     default:
       decimals = 18
       divisor = 10 ** 18

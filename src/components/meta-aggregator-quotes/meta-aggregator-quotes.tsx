@@ -6,8 +6,7 @@ import { formatCalldata, formatNumber, formatTokenAmount } from '@/lib/utils'
 const MetaAggregatorQuotes = () => {
   const { latestQuote, isConnected } = useAggregatorsQuote()
 
-  // Extract token symbols from the trading configuration
-  const toTokenSymbol = 'HYPE' // Based on the hook configuration, this is trading to HYPE
+  const toTokenSymbol = 'HYPE'
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
