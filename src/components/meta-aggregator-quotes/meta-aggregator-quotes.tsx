@@ -3,8 +3,11 @@
 import { useAggregatorsQuote } from '@/hooks/use-aggregators-quote'
 import { formatCalldata, formatNumber, formatTokenAmount } from '@/lib/utils'
 
-const QuotesComponent = () => {
+const MetaAggregatorQuotes = () => {
   const { latestQuote, isConnected } = useAggregatorsQuote()
+
+  // Extract token symbols from the trading configuration
+  const toTokenSymbol = 'HYPE' // Based on the hook configuration, this is trading to HYPE
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -32,14 +35,14 @@ const QuotesComponent = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <span className="text-gray-400 text-sm">From:</span>
-                <div className="text-lg font-mono text-white mt-1">
-                  USDT (6 decimals)
-                </div>
+                <div className="text-lg font-mono text-white mt-1">10 USDT</div>
               </div>
               <div>
                 <span className="text-gray-400 text-sm">To:</span>
                 <div className="text-lg font-mono text-white mt-1">
-                  HYPE (18 decimals)
+                  {latestQuote
+                    ? `${formatTokenAmount(latestQuote.quote.amountOut, 'HYPE')} HYPE`
+                    : 'HYPE'}
                 </div>
               </div>
               <div>
@@ -113,9 +116,9 @@ const QuotesComponent = () => {
                         <p className="text-lg font-mono text-white">
                           {formatTokenAmount(
                             latestQuote.quote.amountOut,
-                            'HYPE',
+                            toTokenSymbol,
                           )}{' '}
-                          HYPE
+                          {toTokenSymbol}
                         </p>
                       </div>
                       <div>
@@ -125,9 +128,9 @@ const QuotesComponent = () => {
                         <p className="text-lg font-mono text-gray-200">
                           {formatTokenAmount(
                             latestQuote.quote.simulationAmountOut,
-                            'HYPE',
+                            toTokenSymbol,
                           )}{' '}
-                          HYPE
+                          {toTokenSymbol}
                         </p>
                       </div>
                     </div>
@@ -144,7 +147,10 @@ const QuotesComponent = () => {
                           Fee
                         </p>
                         <p className="text-lg font-mono text-white">
-                          {formatTokenAmount(latestQuote.quote.fee, 'HYPE')}
+                          {formatTokenAmount(
+                            latestQuote.quote.fee,
+                            toTokenSymbol,
+                          )}
                         </p>
                       </div>
                       <div>
@@ -196,7 +202,7 @@ const QuotesComponent = () => {
               </div>
             )}
 
-            {/* Raw Data Section for Debugging */}
+            {/* Raw Data Section */}
             <details
               className="bg-gray-800 rounded-lg border border-gray-700"
               open
@@ -217,4 +223,4 @@ const QuotesComponent = () => {
   )
 }
 
-export default QuotesComponent
+export default MetaAggregatorQuotes
