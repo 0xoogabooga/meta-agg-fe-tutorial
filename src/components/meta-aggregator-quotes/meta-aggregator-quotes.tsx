@@ -1,10 +1,13 @@
 'use client'
 
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
 import { useAggregatorsQuote } from '@/hooks/use-aggregators-quote'
 import { formatCalldata, formatNumber, formatTokenAmount } from '@/lib/utils'
 
 const MetaAggregatorQuotes = () => {
-  const { latestQuote, isConnected } = useAggregatorsQuote()
+  const { address: walletAddress, isConnected: walletConnected } = useAccount()
+  const { latestQuote, isConnected } = useAggregatorsQuote(walletAddress)
 
   const toTokenSymbol = 'HYPE'
 
@@ -17,17 +20,79 @@ const MetaAggregatorQuotes = () => {
             <h1 className="text-3xl font-bold text-white">
               Meta Aggregator Quotes
             </h1>
-            <div className="flex items-center space-x-3">
-              <div
-                className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}
-              />
-              <span
-                className={`text-sm font-medium ${isConnected ? 'text-green-400' : 'text-red-400'}`}
-              >
-                {isConnected ? 'Live Stream Connected' : 'Disconnected'}
-              </span>
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-3">
+                <div
+                  className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}
+                />
+                <span
+                  className={`text-sm font-medium ${isConnected ? 'text-green-400' : 'text-red-400'}`}
+                >
+                  {isConnected ? 'Live Stream Connected' : 'Disconnected'}
+                </span>
+                {walletConnected && (
+                  <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                    Wallet Connected
+                  </span>
+                )}
+              </div>
+              <ConnectButton />
             </div>
           </div>
+
+          {/* Presimulation Explanation */}
+          {!walletConnected && (
+            <div className="bg-orange-900/30 border border-orange-700 rounded-lg p-4 mb-6">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
+                <span className="text-orange-300 font-medium text-sm">
+                  🛡️ Protection Notice
+                </span>
+              </div>
+              <div className="text-gray-300">
+                <p className="text-sm">
+                  <span className="font-semibold text-orange-300">
+                    Connect your wallet
+                  </span>{' '}
+                  to get{' '}
+                  <span className="font-semibold text-green-400">
+                    real, presimulated pricing
+                  </span>{' '}
+                  from the Ooga Booga backend.
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Without wallet connection, quotes may be{' '}
+                  <span className="text-red-400">spoofed or manipulated</span>{' '}
+                  by aggregators. Connected wallets get verified, MEV-protected
+                  quotes that reflect actual execution prices.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {walletConnected && (
+            <div className="bg-green-900/30 border border-green-700 rounded-lg p-4 mb-6">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+                <span className="text-green-300 font-medium text-sm">
+                  ✅ Protected Mode Active
+                </span>
+              </div>
+              <div className="text-gray-300">
+                <p className="text-sm">
+                  You're now receiving{' '}
+                  <span className="font-semibold text-green-400">
+                    presimulated quotes
+                  </span>{' '}
+                  verified by the Ooga Booga backend.
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  These quotes reflect real execution conditions and are
+                  protected against price manipulation and MEV attacks.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Trade Info */}
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
