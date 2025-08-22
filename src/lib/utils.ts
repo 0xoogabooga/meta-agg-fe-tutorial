@@ -1,3 +1,5 @@
+import { formatUnits } from 'viem'
+
 export const formatCalldata = (calldata: string) => {
   if (!calldata) return ''
   return calldata.length > 100
@@ -47,4 +49,45 @@ export const formatNumber = (
     minimumFractionDigits: 2,
     maximumFractionDigits: decimals,
   })
+}
+
+export const roundAmount = (
+  amount: number | string | undefined,
+  decimals = 3,
+  bigAmountDecimals?: number,
+): number => {
+  if (!amount) return 0
+
+  const numAmount = Number(amount)
+
+  if (Number.isInteger(numAmount)) return numAmount
+
+  if (numAmount > -1 && numAmount < 1) {
+    const multiplier =
+      10 ** (decimals - Math.floor(Math.log10(Math.abs(numAmount))) - 1)
+
+    return Math.round(numAmount * multiplier) / multiplier
+  }
+
+  return Number(numAmount.toFixed(bigAmountDecimals ?? decimals))
+}
+
+export const formatBigIntTokenAmount = (
+  number?: bigint,
+  tokenDecimals?: number,
+  symbol?: string,
+  roundDecimals = 6,
+  bigAmountDecimals?: number,
+): string => {
+  let formattedNumber = String(
+    roundAmount(
+      formatUnits(number ?? BigInt(0), tokenDecimals ?? 18),
+      roundDecimals,
+      bigAmountDecimals,
+    ),
+  )
+
+  if (symbol) formattedNumber += ` ${symbol.toUpperCase()}`
+
+  return formattedNumber
 }

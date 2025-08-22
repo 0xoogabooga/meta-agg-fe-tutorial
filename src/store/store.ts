@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { Aggregator } from '@/api/api'
 import { createSelectors } from '@/store/create-selectors'
 
 export type AggregatorQuote = {
@@ -12,17 +13,15 @@ export type StreamAggregatorQuote = {
   timestamp: number
 }
 
-export type AggregatorMeta = Record<
-  string,
-  { id: string; displayName: string; logoUrl: string }
->
+// Updated to use the proper Aggregator type
+export type AggregatorMeta = Record<string, Aggregator>
 
 interface OBState {
   selectedAggregatorId: string | null
   aggregatorsQuote: {
     [aggregator: string]: AggregatorQuote
   } | null
-  aggregatorsMeta: AggregatorMeta[]
+  aggregatorsMeta: AggregatorMeta | null
 }
 
 type OBAction = {
@@ -30,17 +29,24 @@ type OBAction = {
   setAggregatorQuote: (data: StreamAggregatorQuote) => void
   removeAllAggregatorQuotes: () => void
   removeOldAggregatorQuotes: (timestamp: number) => void
-  setAggregatorsMeta: (aggregatorsMeta: AggregatorMeta[]) => void
+  setAggregatorsMeta: (aggregators: Aggregator[]) => void
 }
 
 export const useStore = create<OBState & OBAction>((set) => ({
   selectedAggregatorId: null,
   aggregatorsQuote: null,
-  aggregatorsMeta: [],
+  aggregatorsMeta: null,
 
   // Action methods
-  setAggregatorsMeta: (aggregatorsMeta: AggregatorMeta[]) =>
-    set(() => ({ aggregatorsMeta })),
+  setAggregatorsMeta: (aggregators: Aggregator[]) => {
+    // Convert array to object for easier lookup
+    const metaMap = aggregators.reduce((acc, aggregator) => {
+      acc[aggregator.id] = aggregator
+      return acc
+    }, {} as AggregatorMeta)
+
+    set(() => ({ aggregatorsMeta: metaMap }))
+  },
   setSelectedAggregatorId: (selectedAggregatorId: string | null) =>
     set(() => ({ selectedAggregatorId })),
 
