@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import AggregatorsListComponent from '@/components/aggregators-list-example/aggregators-list'
 import MetaAggregatorQuotes from '@/components/fetch-quotes-example/meta-aggregator-quotes'
 import Tabs, { type TabItem } from '@/components/tabs/tabs'
@@ -26,7 +27,13 @@ const TabbedLayout = () => {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <Tabs tabs={tabs} defaultTab="quotes" />
+      <Suspense
+        fallback={
+          <div className="bg-gray-800 border-b border-gray-700 h-16 animate-pulse" />
+        }
+      >
+        <Tabs tabs={tabs} defaultTab="quotes" />
+      </Suspense>
     </div>
   )
 }
