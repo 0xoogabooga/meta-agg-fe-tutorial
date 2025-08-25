@@ -12,8 +12,7 @@ import type { Address } from 'viem'
  * Base URL for the aggregator service API
  * Points to the internal gateway for the HyperEVM development environment
  */
-const AGGREGATOR_BASE_URL =
-  'https://internal-gateway-hyperevm-dev.up.railway.app'
+const AGGREGATOR_BASE_URL = 'https://hyperevm.internal.oogabooga.io'
 
 /**
  * Parameters required to create a quote stream for token swaps

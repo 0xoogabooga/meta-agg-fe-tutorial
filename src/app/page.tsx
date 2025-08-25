@@ -1,5 +1,5 @@
-import QuotesComponent from '@/components/quotes-component/quotes-component'
+import TabbedLayout from '@/components/tabbed-layout/tabbed-layout'
 
 export default function Home() {
-  return <QuotesComponent />
+  return <TabbedLayout />
 }

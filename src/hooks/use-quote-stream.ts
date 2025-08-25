@@ -5,6 +5,7 @@ import {
   type QuoteStreamEvent,
   type QuoteStreamParams,
 } from '@/api/meta-stream-api'
+import type { Quote } from '@/lib/types'
 
 /**
  * Properties for configuring the quote stream hook
@@ -42,7 +43,7 @@ export const useQuoteStream = ({
   enabled = true,
 }: UseQuoteStreamProps) => {
   const [isConnected, setIsConnected] = useState(false)
-  const [latestQuote, setLatestQuote] = useState<any>(null)
+  const [latestQuote, setLatestQuote] = useState<Quote | undefined>(undefined)
   const [error, setError] = useState<Error | null>(null)
   const eventSourceRef = useRef<EventSource | null>(null)
 
@@ -74,7 +75,6 @@ export const useQuoteStream = ({
 
     const handleError = (error: Error) => {
       setError(error)
-      setIsConnected(false)
     }
 
     const handleConnected = () => {
