@@ -75,7 +75,6 @@ export const useQuoteStream = ({
 
     const handleError = (error: Error) => {
       setError(error)
-      setIsConnected(false)
     }
 
     const handleConnected = () => {

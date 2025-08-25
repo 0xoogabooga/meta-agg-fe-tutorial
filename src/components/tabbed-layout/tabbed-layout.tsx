@@ -1,7 +1,7 @@
 'use client'
 
-import AggregatorsListComponent from '@/components/aggregators-list/aggregators-list'
-import MetaAggregatorQuotes from '@/components/meta-aggregator-quotes/meta-aggregator-quotes'
+import AggregatorsListComponent from '@/components/aggregators-list-example/aggregators-list'
+import MetaAggregatorQuotes from '@/components/fetch-quotes-example/meta-aggregator-quotes'
 import Tabs, { type TabItem } from '@/components/tabs/tabs'
 import TransactionExampleComponent from '@/components/transaction-example/transaction-example'
 
