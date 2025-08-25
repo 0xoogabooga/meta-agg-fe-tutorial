@@ -2,6 +2,12 @@
 
 A **Next.js** tutorial demonstrating how to connect to and stream real-time data from the **Ooga Booga Meta Dex Aggregator API** using Server-Sent Events (SSE).
 
+## 🌐 Live Demo
+
+**[🔗 View Live Demo](https://meta-agg-fe-tutorial.vercel.app/?tab=quotes)**
+
+Try the live application to see real-time quote streaming in action!
+
 ## 📋 Table of Contents
 
 - [📚 Key Concepts](#-key-concepts)
