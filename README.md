@@ -32,7 +32,7 @@ Try the live application to see real-time quote streaming in action!
 The application connects to a streaming API for real-time swap quotes:
 
 ```typescript
-const AGGREGATOR_BASE_URL = 'https://hyperevm.internal.oogabooga.io'
+const AGGREGATOR_BASE_URL = 'https://hyperevm.api.oogabooga.io/meta/stream/swap'
 ```
 
 #### Supported Parameters

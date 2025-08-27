@@ -15,7 +15,7 @@ export interface Aggregator {
 export const fetchAggregators = async (): Promise<Aggregator[]> => {
   try {
     const response = await fetch(
-      'https://hyperevm.internal.oogabooga.io/aggregator/aggregators',
+      'https://hyperevm.api.oogabooga.io/meta/aggregators',
     )
 
     if (!response.ok) {
